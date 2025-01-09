@@ -3,7 +3,6 @@ import Logo from "/KU-CMS.webp";
 import "./RegistrationStyles.css";
 import { Link } from "react-router-dom";
 import {useForm} from 'react-hook-form'
-import axiosInstance from "../../components/AxiosInstance";
 import { useNavigate } from "react-router-dom";
 
 const Registration = () => {

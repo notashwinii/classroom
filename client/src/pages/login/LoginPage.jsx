@@ -21,8 +21,8 @@ const LoginPage = () => {
   };
 
   return (
-    <>
-      <div className="loginContainer" id="container">
+    <div className="w-full h-full flex items-center justify-center">
+      <div className=" max-h-[100px] loginContainer" id="container">
         <div className="form-container sign-up">
           <form>
             <img src={Logo} alt="KU-CMS" className="logo" />
@@ -65,7 +65,7 @@ const LoginPage = () => {
                 Login your student account to access your courses and
                 assignments.
               </p>
-              <button className="hidden" onClick={handleStudentToggle}>
+              <button className="" onClick={handleStudentToggle}>
                 Login as Student
               </button>
             </div>
@@ -74,7 +74,7 @@ const LoginPage = () => {
               <p>
                 Login your teacher account to manage your classes and students.
               </p>
-              <button className="hidden" onClick={handleTeacherToggle}>
+              <button className="" onClick={handleTeacherToggle}>
                 Login as Teacher
               </button>
             </div>
@@ -85,7 +85,7 @@ const LoginPage = () => {
           <button onClick={handleTeacherToggle}>Teacher Login</button>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

@@ -20,10 +20,10 @@ const TeacherDashboard = () => {
 
       {/* Navbar Section */}
       <nav className="navbar">
-        <Link to="/teacher-notes">Upload Notes</Link>
-        <Link to="/assignments">Assignments</Link>
-        <Link to="/grade">Grade</Link>
-        <Link to="/notices">Notices</Link>
+        <Link to="/TeacherUploadPage">Upload Notes</Link>
+        <Link to="/AssignmentPage">Assignments</Link>
+        <Link to="/TeacherGradingPage">Grade</Link>
+        <Link to="/NoticePage">Notices</Link>
       </nav>
 
       {/* Welcome Section */}
@@ -31,28 +31,36 @@ const TeacherDashboard = () => {
         <h2>Welcome Teacher</h2>
         <p>Manage your classes and students efficiently.</p>
       </section>
+      <div className="flex">
 
       {/* Dashboard Section */}
       <section className="dashboard">
-        <Link to="/teacher-notes">
+        <Link to="/TeacherUploadPage">
           <div className="card">
             <h3>Upload Notes</h3>
             <p>Manage Notes for students.</p>
           </div>
         </Link>
-        <Link to="/assignments">
+        <Link to="/AssignmentPage">
           <div className="card">
             <h3>Assignments</h3>
             <p>Grade Assignments and give feedback</p>
           </div>
         </Link>
-        <Link to="/notice">
+        <Link to="/TeacherGradingPage">
+          <div className="card">
+            <h3>Grades</h3>
+            <p>Overall grades</p>
+          </div>
+        </Link>
+        <Link to="/NoticePage">
           <div className="card">
             <h3>Notices</h3>
             <p>Give important notices to your students.</p>
           </div>
         </Link>
       </section>
+      </div>
 
       {/* Footer section */}
       <footer className="footer">
