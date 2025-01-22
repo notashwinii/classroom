@@ -7,8 +7,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 // Pages
 import LoginPage from "./pages/login/LoginPage";
 
-import StudentDashboard from "./pages/dashboard/StudentDashboard";
-import TeacherDashboard from "./pages/dashboard/TeacherDashboard";
 
 // Components
 
@@ -22,10 +20,18 @@ import ItemDetailsPage from "./components/teachers/grade/ItemDetailsPage";
 import AssignmentPage from "./components/teachers/AssignmentPage";
 import Attendance from "./components/teachers/Attendance"
 
+import StudentDashboard from "../src/components/student/StudentDashboard";
+import FacultyDashboard from "../src/components/teachers/FacultyDashboard";
+
 function App() {
   return (
     <>
-      <BrowserRouter>
+        <BrowserRouter
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true,
+      }}
+    >
         <Routes>
           {/* <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
@@ -41,14 +47,15 @@ function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
           
-
+          <Route path="/student/dashboard" element={<StudentDashboard  />} />
+          <Route path="/faculty/dashboard" element={<FacultyDashboard  />} />
           
           <Route path="/AssignmentPage" element={<AssignmentPage />} />
           <Route path="/StudentGradesgPage" element={<StudentGradesPage />} />
           <Route path="/" element={<Userlayout />}>
-            <Route path="/student-dashboard" element={<StudentDashboard />} />
-            <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-            <Route path="/" element={<NotesPage />} />
+           
+            <Route path="/notes" element={<NotesPage />} />
+            <Route path="/notes/:id" element={<NotesPage />} />
             <Route path="/TeacherUploadPage" element={<TeacherUploadPage />}/>
             <Route path="/TeacherGradingPage" element={<TeacherGradingPage />}/>
             <Route path="/attendance" element={<Attendance/>}/>

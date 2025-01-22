@@ -18,7 +18,7 @@ const NotesPage = () => {
 
   const fetchNotes = async (courseCode) => {
     try {
-      const response = await fetch(`http://your-api-url/notes/?course_code=${encodeURIComponent(courseCode)}`);
+      const response = await fetch(`http://kucms/api/notes/?course_code=${encodeURIComponent(courseCode)}`);
       const data = await response.json();
       setNotes(data.results || []);
     } catch (error) {

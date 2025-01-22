@@ -3,64 +3,68 @@ import Logo from "/KU-CMS.webp";
 import { Link, useNavigate } from "react-router-dom";
 import "./LoginStyles.css";
 
+
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState(""); // Track the selected user type
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
- const handleLogin = async (e) => {
-  e.preventDefault();
-
-  if (!email || !password) {
-    setError("Please enter your credentials.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:8000/kucms/api/token/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      setError(errorData.detail || "Something went wrong. Please try again later.");
+  
+  const handleLogin = async (e) => {
+    e.preventDefault();
+  
+    if (!email || !password) {
+      setError("Please enter your credentials.");
       return;
     }
 
-    const data = await response.json();
-    console.log("Received user type:", data.user_type); // Log the user type for debugging
+    try {
+      const response = await fetch("http://localhost:8000/kucms/api/token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-    if (!data.user_type) {
-      setError("User type missing in the response.");
-      return;
-    }
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.detail || "Something went wrong. Please try again later.");
+        return;
+      }
 
-    localStorage.setItem("access_token", data.access);
-    localStorage.setItem("refresh_token", data.refresh);
+      const data = await response.json();
 
-    // Navigate based on user type from the backend response
-    if (data.user_type?.toLowerCase() === "faculty") {
-      navigate("/teacher-dashboard");
-    } else if (data.user_type?.toLowerCase() === "student") {
-      navigate("/student-dashboard");
-    } else {
-      console.log("Unexpected user type:", data.user_type); // Log for debugging
-      setError("Unexpected user type. Please contact support.");
-    }
-  } catch (err) {
-    setError("Something went wrong. Please try again later.");
-    console.error(err);
-  }
-};
+      // Check if the response contains the expected keys
+      if (!data.access || !data.refresh) {
+        setError("Invalid login credentials or unexpected response format.");
+        return;
+      }
+
+      localStorage.setItem("access_token", data.access);
+      localStorage.setItem("refresh_token", data.refresh);
+
+      console.log("Login successful");
+
+      // Navigate based on user type from the backend response
+      if (userType === "faculty") {
+        navigate(`/faculty/dashboard`);
+      } if (userType === "student"){
+        navigate(`/student/faculty`);
+      }
+    } catch (err) {
+      setError("Something went wrong during login. Please try again.");
+      console.error(err);
+    
+  };
+
+  
+  };
+  
 
 
   const handleFacultyToggle = () => {
