@@ -1,6 +1,6 @@
 import React from "react";
 import { Book, FileText, ChevronRight, Bell } from "lucide-react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom"; 
 
 const Sidebar = ({ sidebarOpen }) => {
   return (
