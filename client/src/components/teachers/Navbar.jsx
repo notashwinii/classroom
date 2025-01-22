@@ -13,9 +13,9 @@ const Navbar = ({ isOpen, setIsOpen }) => {
       <h1 className="ml-3 text-xl font-semibold text-gray-800">KU-CMS</h1>
     </div>
 
-    {/* Right Side: "Hello, Student" */}
+    {/* Right Side: "Hello, Teacher" */}
     <div className="flex items-center text-gray-800">
-      <p className="text-sm">Hello, Student</p>
+      <p className="text-sm">Hello, Faculty</p>
     </div>
 </div>
   );

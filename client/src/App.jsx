@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 // Pages
 import LoginPage from "./pages/login/LoginPage";
-import Registration from "./pages/registration/Registration";
+
 import StudentDashboard from "./pages/dashboard/StudentDashboard";
 import TeacherDashboard from "./pages/dashboard/TeacherDashboard";
 
@@ -14,11 +14,13 @@ import TeacherDashboard from "./pages/dashboard/TeacherDashboard";
 
 import NotesPage from "./components/student/NotesPage";
 import TeacherUploadPage from "./components/teachers/TeacherUploadPage";
-import TeacherGradingPage from "./components/teachers/TeacherGradingPage";
+import TeacherGradingPage from "./components/teachers/grade/TeacherGradingPage";
 import StudentGradesPage from "./components/student/StudentGradesPage";
 import Userlayout from "./components/Userlayout";
-import NoticePage from "./components/NoticePage";
+import ItemDetailsPage from "./components/teachers/grade/ItemDetailsPage";
+
 import AssignmentPage from "./components/teachers/AssignmentPage";
+import Attendance from "./components/teachers/Attendance"
 
 function App() {
   return (
@@ -38,22 +40,24 @@ function App() {
 
           <Route path="/" element={<LoginPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<Registration />} />
+          
 
-          <Route path="/NoticePage" element={<NoticePage />} />
+          
           <Route path="/AssignmentPage" element={<AssignmentPage />} />
           <Route path="/StudentGradesgPage" element={<StudentGradesPage />} />
           <Route path="/" element={<Userlayout />}>
             <Route path="/student-dashboard" element={<StudentDashboard />} />
             <Route path="/teacher-dashboard" element={<TeacherDashboard />} />
-            <Route path="/NotesPage" element={<NotesPage />} />
-            <Route path="/TeacherUploadPage" element={<TeacherUploadPage />} />
-            <Route
-              path="/TeacherGradingPage"
-              element={<TeacherGradingPage />}
-            />
-            {/* <Route path="/StudentGradesgPage" element={<StudentGradesPage/>}/> */}
-            <Route path="/NoticePage" element={<NoticePage />} />
+            <Route path="/" element={<NotesPage />} />
+            <Route path="/TeacherUploadPage" element={<TeacherUploadPage />}/>
+            <Route path="/TeacherGradingPage" element={<TeacherGradingPage />}/>
+            <Route path="/attendance" element={<Attendance/>}/>
+
+
+            
+            
+            <Route path="/items/:id" element={<ItemDetailsPage />} />
+           {/* <Route path="/note/:id" element={<ItemDetailsPage />} />*/}
           </Route>
         </Routes>
       </BrowserRouter>

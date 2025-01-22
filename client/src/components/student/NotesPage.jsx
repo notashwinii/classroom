@@ -1,119 +1,95 @@
-import React, { useState } from 'react';
-import StudentDashboard from '../../pages/dashboard/StudentDashboard';
+import React, { useState, useEffect } from 'react';
+import Navbar from '../student/Navbar';
+import Sidebar from './sidebar';
+import { Link } from 'react-router-dom';
 
 const NotesPage = () => {
-  const [studentComment, setStudentComment] = useState('');
-  const [studentComments, setStudentComments] = useState([]);
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [notes, setNotes] = useState([]);
+  const [selectedNote, setSelectedNote] = useState(null);
 
-  const handleStudentCommentSubmit = () => {
-    if (studentComment.trim() !== '') {
-      setStudentComments([...studentComments, studentComment]);
-      setStudentComment(''); // Clear the input field after submission
+  const courses = ['COMP 204', 'COMP 231', 'COMP 232', 'MATH 207'];
+
+  useEffect(() => {
+    if (selectedCourse) {
+      fetchNotes(selectedCourse);
+    }
+  }, [selectedCourse]);
+
+  const fetchNotes = async (courseCode) => {
+    try {
+      const response = await fetch(`http://your-api-url/notes/?course_code=${encodeURIComponent(courseCode)}`);
+      const data = await response.json();
+      setNotes(data.results || []);
+    } catch (error) {
+      console.error('Error fetching notes:', error);
     }
   };
 
+  const handleCourseChange = (e) => {
+    setSelectedCourse(e.target.value);
+    setSelectedNote(null);
+  };
+
+  const handleNoteClick = (noteId) => {
+    const selectedNote = notes.find(note => note.id === noteId);
+    setSelectedNote(selectedNote);
+  };
+
   return (
-    <div style={{ fontFamily: 'Arial, sans-serif', padding: '40px', backgroundColor: '#f4f4f9', minHeight: '100vh' }}>
-      {/* Navbar */}
-      <div style={{
-        backgroundColor: '#512da8',
-        padding: '20px',
-        borderRadius: '10px',
-        marginBottom: '30px',
-        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-      }}>
-        <h1 style={{ color: 'white', textAlign: 'center', fontSize: '28px', margin: 0 }}>Student Notes</h1>
-      </div>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <Sidebar />
 
-      {/* Notes Section */}
-      <div style={{
-        width: '70%',
-        margin: '0 auto',
-        padding: '30px',
-        backgroundColor: '#fff',
-        borderRadius: '15px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        textAlign: 'center',
-      }}>
-        <h2 style={{ color: '#512da8', fontSize: '30px', marginBottom: '20px' }}>Class Notes</h2>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col">
+        {/* Navbar */}
+        <Navbar />
         
-        {/* Download Button */}
-        <button style={{
-          padding: '15px 30px',
-          backgroundColor: '#512da8',
-          color: 'white',
-          border: 'none',
-          borderRadius: '50px',
-          cursor: 'pointer',
-          fontSize: '18px',
-          transition: 'background-color 0.3s',
-        }}>
-          Download Notes
-        </button>
-
-        {/* Comments Section */}
-        <div style={{ marginTop: '40px', textAlign: 'left' }}>
-          <h3 style={{ color: '#512da8', fontSize: '24px' }}>Comments</h3>
-          <div>
-            {studentComments.length === 0 ? (
-              <p style={{ color: '#888', fontSize: '18px' }}>No comments yet.</p>
-            ) : (
-              studentComments.map((comment, index) => (
-                <div
-                  key={index}
-                  style={{
-                    backgroundColor: '#f9f9f9',
-                    padding: '15px',
-                    borderRadius: '10px',
-                    marginBottom: '15px',
-                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                  }}
-                >
-                  <p style={{ color: '#333', fontSize: '18px' }}>{comment}</p>
-                </div>
-              ))
-            )}
+        <main className="flex-1 p-8 py-24">
+          <h1 className="text-3xl font-bold mb-6">My Notes</h1>
+          
+          <div className="mb-8">
+            <select 
+              value={selectedCourse}
+              onChange={handleCourseChange}
+              className="w-full px-4 py-2 border rounded"
+            >
+              <option value="">Select Course</option>
+              {courses.map((course) => (
+                <option key={course} value={course}>{course}</option>
+              ))}
+            </select>
           </div>
 
-          {/* Comment Input */}
-          <textarea
-            value={studentComment}
-            onChange={(e) => setStudentComment(e.target.value)}
-            placeholder="Write your comment here..."
-            rows="6"
-            style={{
-              width: '100%',
-              padding: '15px',
-              borderRadius: '10px',
-              border: '1px solid #ddd',
-              marginBottom: '15px',
-              fontSize: '18px',
-              resize: 'none',
-            }}
-          />
-          <button
-            onClick={handleStudentCommentSubmit}
-            style={{
-              padding: '12px 25px',
-              backgroundColor: '#512da8',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50px',
-              cursor: 'pointer',
-              fontSize: '18px',
-              transition: 'background-color 0.3s',
-            }}
-          >
-            Submit Comment
-          </button>
-          
-          
-        </div>
+          {selectedCourse && notes.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-2xl font-semibold mb-4">Available Notes</h2>
+              <ul>
+                {notes.map((note) => (
+                  <li key={note.id} className="mb-2 cursor-pointer" onClick={() => handleNoteClick(note.id)}>
+                    <Link to={`/note/${note.id}`}>{note.title}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {selectedNote && (
+            <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+              <h3 className="text-xl font-semibold mb-4">{selectedNote.title}</h3>
+              <p>{selectedNote.content}</p>
+              <div className="mt-4">
+                <a href={selectedNote.file} download className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  Download Note
+                </a>
+              </div>
+            </div>
+          )}
+        </main>
       </div>
-      
     </div>
   );
 };
 
 export default NotesPage;
-

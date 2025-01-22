@@ -1,88 +1,169 @@
-import React from "react";
-
-// Images
+import React, { useState } from "react";
 import Logo from "/KU-CMS.webp";
-
-// Styles
+import { Link, useNavigate } from "react-router-dom";
 import "./LoginStyles.css";
 
-// Routes
-import { Link } from "react-router-dom";
-
 const LoginPage = () => {
-  const handleTeacherToggle = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [userType, setUserType] = useState(""); // Track the selected user type
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+ const handleLogin = async (e) => {
+  e.preventDefault();
+
+  if (!email || !password) {
+    setError("Please enter your credentials.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8000/kucms/api/token/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      setError(errorData.detail || "Something went wrong. Please try again later.");
+      return;
+    }
+
+    const data = await response.json();
+    console.log("Received user type:", data.user_type); // Log the user type for debugging
+
+    if (!data.user_type) {
+      setError("User type missing in the response.");
+      return;
+    }
+
+    localStorage.setItem("access_token", data.access);
+    localStorage.setItem("refresh_token", data.refresh);
+
+    // Navigate based on user type from the backend response
+    if (data.user_type?.toLowerCase() === "faculty") {
+      navigate("/teacher-dashboard");
+    } else if (data.user_type?.toLowerCase() === "student") {
+      navigate("/student-dashboard");
+    } else {
+      console.log("Unexpected user type:", data.user_type); // Log for debugging
+      setError("Unexpected user type. Please contact support.");
+    }
+  } catch (err) {
+    setError("Something went wrong. Please try again later.");
+    console.error(err);
+  }
+};
+
+
+  const handleFacultyToggle = () => {
+    setUserType("faculty"); // Set the user type to "faculty"
+    setError(null); // Clear any previous errors
     const container = document.getElementById("container");
-    container.classList.add("active");
+    container.classList.add("active"); // Switch to faculty form
   };
 
   const handleStudentToggle = () => {
+    setUserType("student"); // Set the user type to "student"
+    setError(null); // Clear any previous errors
     const container = document.getElementById("container");
-    container.classList.remove("active");
+    container.classList.remove("active"); // Switch to student form
   };
 
   return (
     <div className="w-full h-full flex items-center justify-center">
-      <div className=" max-h-[100px] loginContainer" id="container">
+      <div className="max-h-[100px] loginContainer" id="container">
+        {/* Faculty Login Form */}
         <div className="form-container sign-up">
-          <form>
+          <form onSubmit={handleLogin}>
             <img src={Logo} alt="KU-CMS" className="logo" />
-            <h2>Teacher Login</h2>
-            <input type="hidden" name="userType" value='teacher' />
-            <input type="email" placeholder="Email" />
-            <input type="password" placeholder="Password" />
+            <h2>Faculty Login</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="error" style={{ color: "red" }}>{error}</p>}
             <div className="button-group">
-              <Link to="/teacher-dashboard">
-                <button>Login</button>
-              </Link>
+              <button type="submit">Login</button>
               <Link to="/register">
-                <button className="secondary">Register</button>
-              </Link> 
+                <button type="button" className="secondary">
+                  Register
+                </button>
+              </Link>
             </div>
           </form>
         </div>
+
+        {/* Student Login Form */}
         <div className="form-container sign-in">
-          <form>
+          <form onSubmit={handleLogin}>
             <img src={Logo} alt="KU-CMS" className="logo" />
             <h2>Student Login</h2>
-            <input type="hidden" name="userType" value='student' />
-            <input type="email" placeholder="Email" />
-            <input type="password" placeholder="Password" />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            {error && <p className="error" style={{ color: "red" }}>{error}</p>}
             <div className="button-group">
-              <Link to="/student-dashboard">
-                <button>Login</button>
-              </Link>
-              <Link to='/register'>
-                <button className="secondary">Register</button>
+              <button type="submit">Login</button>
+              <Link to="/register">
+                <button type="button" className="secondary">
+                  Register
+                </button>
               </Link>
             </div>
           </form>
         </div>
+
+        {/* Toggle Panels */}
         <div className="toggle-container">
           <div className="toggle">
             <div className="toggle-panel toggle-left">
               <h2>Are you a student?</h2>
               <p>
-                Login your student account to access your courses and
+                Login to your student account to access your courses and
                 assignments.
               </p>
-              <button className="" onClick={handleStudentToggle}>
-                Login as Student
-              </button>
+              <button onClick={handleStudentToggle}>Login as Student</button>
             </div>
             <div className="toggle-panel toggle-right">
-              <h2>Are you a Teacher?</h2>
+              <h2>Are you a Faculty?</h2>
               <p>
-                Login your teacher account to manage your classes and students.
+                Login to your faculty account to manage your classes and
+                students.
               </p>
-              <button className="" onClick={handleTeacherToggle}>
-                Login as Teacher
-              </button>
+              <button onClick={handleFacultyToggle}>Login as Faculty</button>
             </div>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
         <div className="mobile-nav">
           <button onClick={handleStudentToggle}>Student Login</button>
-          <button onClick={handleTeacherToggle}>Teacher Login</button>
+          <button onClick={handleFacultyToggle}>Faculty Login</button>
         </div>
       </div>
     </div>
