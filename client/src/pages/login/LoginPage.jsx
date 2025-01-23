@@ -18,7 +18,7 @@ const LoginPage = () => {
       setError("Please enter your credentials.");
       return;
     }
-
+  
     try {
       const response = await fetch("http://localhost:8000/kucms/api/token/", {
         method: "POST",
@@ -30,39 +30,38 @@ const LoginPage = () => {
           password: password,
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         setError(errorData.detail || "Something went wrong. Please try again later.");
         return;
       }
-
+  
       const data = await response.json();
-
+  
       // Check if the response contains the expected keys
       if (!data.access || !data.refresh) {
         setError("Invalid login credentials or unexpected response format.");
         return;
       }
-
+  
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
-
+  
       console.log("Login successful");
-
+  
       // Navigate based on user type from the backend response
       if (userType === "faculty") {
         navigate(`/faculty/dashboard`);
-      } if (userType === "student"){
-        navigate(`/student/faculty`);
+      } else if (userType === "student") {
+        navigate(`/student/dashboard`);
+      } else {
+        setError("Please select a user type.");
       }
     } catch (err) {
       setError("Something went wrong during login. Please try again.");
       console.error(err);
-    
-  };
-
-  
+    }
   };
   
 
@@ -104,11 +103,7 @@ const LoginPage = () => {
             {error && <p className="error" style={{ color: "red" }}>{error}</p>}
             <div className="button-group">
               <button type="submit">Login</button>
-              <Link to="/register">
-                <button type="button" className="secondary">
-                  Register
-                </button>
-              </Link>
+              
             </div>
           </form>
         </div>
@@ -133,11 +128,7 @@ const LoginPage = () => {
             {error && <p className="error" style={{ color: "red" }}>{error}</p>}
             <div className="button-group">
               <button type="submit">Login</button>
-              <Link to="/register">
-                <button type="button" className="secondary">
-                  Register
-                </button>
-              </Link>
+              
             </div>
           </form>
         </div>

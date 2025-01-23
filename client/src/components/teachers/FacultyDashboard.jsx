@@ -1,57 +1,50 @@
 import React, { useState, useEffect } from "react";
-import RoutineCalendar from "../shared/RoutineScheduler";
-import { useClassroom } from "../../context/context";
-import ClassCard from "../ClassCard";
+import WeeklyRoutineCalendar from "../shared/RoutineScheduler";
+
+import Navbar from "./Navbar";
+import Sidebar from "./sidebar";
+
+const routineEvents = [
+  { id: "1", day: "Monday", startTime: "9:00 AM", endTime: "11:00 AM", subject: "COMP231",  className: 'CM II/II',room: "B9 302" },
+  { id: "2", day: "Monday", startTime: "12:00 PM", endTime: "2:00 PM", subject: "COMP231",  className: 'CS II/II',room: "Lab 304" },
+  { id: "3", day: "Tuesday", startTime: "10:00 AM", endTime: "12:00 PM", subject: "COMP302", className: 'CS III/I', room: "B 9202" },
+  { id: "4", day: "Wednesday", startTime: "2:00 PM", endTime: "4:00 PM", subject: "COMP302",  className: 'CE III/I',room: "B9 303" },
+];
+const timeSlots = [
+  "9:00 AM", "11:00 AM", 
+  "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM"
+];
 
 const FacultyDashboard = () => {
-  const [loading, setLoading] = useState(true);
-  const { data: classroomData } = useClassroom();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        if (classroomData && classroomData.classes) {
-          // No need to do anything with classroomData here
-          // We're just checking if it exists
-        } else {
-          console.warn("Classroom data not available");
-        }
-      } catch (err) {
-        console.error("Error fetching faculty data:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [classroomData]);
-
-  if (loading || !classroomData) {
-    return <div>Loading...</div>;
-  }
-
+  
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Faculty Dashboard</h1>
+    <div className="flex h-screen bg-gray-100">
+    {/* Sidebar */}
+    <Sidebar />
 
-      {/* Routine Schedule */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Weekly Schedule</h2>
-        <div className="bg-white rounded-lg shadow p-4">
-          <RoutineCalendar userType="faculty" />
-        </div>
-      </div>
+    {/* Main Content */}
+    
+      {/* Navbar */}
+      <Navbar />
 
-      {/* Class Cards */}
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Your Classes</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {classroomData.classes.map((classItem) => (
-            <ClassCard key={classItem.id} classData={classItem} />
-          ))}
-        </div>
-      </div>
+      {/* Content Area */}
+      
+      <div className="flex-1 overflow-y-auto  py-20 p-2">
+          {/* Routine Schedule */}
+          <div className="mb-8 w-full mx-auto">
+
+  <div className="bg-white rounded-lg shadow p-2 max-h-[500px] overflow-auto">
+  <WeeklyRoutineCalendar events={routineEvents} timeSlots={timeSlots} />
+  </div>
+</div>
+
+     
+     
+
+     
+       
+      
+    </div>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 // Create context
@@ -15,80 +15,90 @@ export const useClassroom = () => {
 
 // Provider component
 export const ClassroomProvider = ({ children }) => {
-    // Initial mock data
-    const initialData = {
-      courses: [
-        {
-          id: '1',
-          code: 'COMP 232',
-          className: 'CS I/II',
-          room: 'B9-302',
-          schedule: {
-            day: 'Monday',
-            time: '10:00 AM'
-          }
-        },
-        {
-          id: '2',
-          code: 'COMP 232',
-          className: 'CM II/III',
-          room: 'E-05',
-          schedule: {
-            day: 'Tuesday',
-            time: '11:00 AM'
-          }
-        },
-        {
-          id: '3',
-          code: 'COMP 301',
-          className: 'CS III/I',
-          room: 'B9-304',
-          schedule: {
-            day: 'Wednesday',
-            time: '12:00 PM'
-          }
-        },
-        {
-          id: '4',
-          code: 'MCSC 202',
-          name: 'Database Management Systems',
-          className: 'MCSC II/III',
-          room: 'B9-305',
-          schedule: {
-            day: 'Thursday',
-            time: '1:00 PM'
-          }
-        },
-        {
-          id: '5',
-          code: 'MATH 207',
-          name: 'Discrete Mathematics',
-          className: 'Mathematics III/IV',
-          room: 'B9-306',
-          schedule: {
-            day: 'Friday',
-            time: '2:00 PM'
-          }
+  // Initial mock data
+  const initialData = {
+    courses: [
+      {
+        id: '1',
+        code: 'COMP 232',
+        className: 'CS I/II',
+        room: 'B9-302',
+        schedule: {
+          day: 'Monday',
+          time: '10:00 AM'
         }
-      ],
-      students: [
-        {
-          id: '1',
-          rollNo: 'CS2021001',
-          name: 'John Doe',
-          attendance: {}
-        },
-        // Add more students as needed
-      ],
-      grades: {},
-      attendance: {},
-      announcements: []
-    };
-  
-    const [data, setData] = useState(initialData);
+      },
+      {
+        id: '2',
+        code: 'COMP 232',
+        className: 'CM II/III',
+        room: 'E-05',
+        schedule: {
+          day: 'Tuesday',
+          time: '11:00 AM'
+        }
+      },
+      {
+        id: '3',
+        code: 'COMP 301',
+        className: 'CS III/I',
+        room: 'B9-304',
+        schedule: {
+          day: 'Wednesday',
+          time: '12:00 PM'
+        }
+      },
+      {
+        id: '4',
+        code: 'MCSC 202',
+        name: 'Database Management Systems',
+        className: 'MCSC II/III',
+        room: 'B9-305',
+        schedule: {
+          day: 'Thursday',
+          time: '1:00 PM'
+        }
+      },
+      {
+        id: '5',
+        code: 'MATH 207',
+        name: 'Discrete Mathematics',
+        className: 'Mathematics III/IV',
+        room: 'B9-306',
+        schedule: {
+          day: 'Friday',
+          time: '2:00 PM'
+        }
+      }
+    ],
+    students: [
+      {
+        id: '1',
+        rollNo: 'CS2021001',
+        name: 'John Doe',
+        attendance: {}
+      },
+      // Add more students as needed
+    ],
+    grades: {},
+    attendance: {},
+    announcements: [],
+    assignments: {}, // Add assignments for each class
+    classes: ["CS-II-II", "CE-II-I"], // List of class names
+  };
 
+  const [data, setData] = useState(() => {
+    // Fetch data from localStorage or use initialData if not found
+    //localStorage.removeItem('classroomData');
+    const storedData = JSON.parse(localStorage.getItem('classroomData'));
+    return storedData || initialData;
+  });
 
-  
+  useEffect(() => {
+    // Persist the classroom data in localStorage
+    localStorage.setItem('classroomData', JSON.stringify(data));
+  }, [data]);
+
   const getRoutine = useCallback(() => {
     return data.courses.flatMap(course => 
       course.schedule && Array.isArray(course.schedule) ? 
@@ -102,7 +112,6 @@ export const ClassroomProvider = ({ children }) => {
         })) : []
     );
   }, [data]);
-  
 
   const getClassList = useCallback((courseId) => {
     return data.students.map(student => ({
@@ -141,21 +150,27 @@ export const ClassroomProvider = ({ children }) => {
     return true;
   }, [data]);
 
-  const getClasses = useCallback(() => {
-    return data.courses.map(course => ({
-      id: course.id,
-      className: `${course.className.replace(/\s+/g, '')} ${course.code}`,
-      code: course.code
-    }));
+  const addAssignment = useCallback((classId, assignment) => {
+    const updatedAssignments = { 
+      ...data.assignments,
+      [classId]: [...(data.assignments[classId] || []), assignment] 
+    };
+    setData(prevData => ({ ...prevData, assignments: updatedAssignments }));
   }, [data]);
 
-  // Provide the context value
+  const getAssignments = useCallback((classId) => {
+    return data.assignments[classId] || [];
+  }, [data]);
+
+  // Provide the context value, including `classes`
   const value = {
     getRoutine,
     getClassList,
     takeAttendance,
     submitGrades,
-    getClasses
+    classes: data.classes, // Providing classes directly
+    addAssignment,
+    getAssignments
   };
 
   return (
